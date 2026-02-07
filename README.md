@@ -148,7 +148,12 @@ graph TB
     PROM --> GRAF
     API --> SENTRY
 ```
-📊** Real-time Data Flow**
+
+
+
+
+
+## 📊 Real-time Data Flow
 
 ```mermaid
 sequenceDiagram
@@ -213,4 +218,94 @@ sequenceDiagram
     DB-->>API: Return historical records
     API-->>Frontend: Return chart-ready data
     Frontend-->>User: Display historical charts
+```
+
+
+
+
+
+
+## 🗄️ Database Schema
+```mermaid
+erDiagram
+    USERS {
+        uuid id PK
+        string email UK
+        string username
+        string password_hash
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    PREFERENCES {
+        uuid id PK
+        uuid user_id FK
+        jsonb alert_thresholds
+        string[] monitored_cities
+        boolean email_alerts
+        boolean sms_alerts
+        boolean push_notifications
+    }
+    
+    CITIES {
+        uuid id PK
+        string name
+        string country_code
+        float latitude
+        float longitude
+        integer population
+        string timezone
+    }
+    
+    POLLUTION_DATA {
+        uuid id PK
+        uuid city_id FK
+        timestamp measured_at
+        float pm2_5
+        float pm10
+        float ozone
+        float nitrogen_dioxide
+        float sulfur_dioxide
+        float carbon_monoxide
+        float air_quality_index
+        float temperature
+        float humidity
+        float wind_speed
+    }
+    
+    PREDICTIONS {
+        uuid id PK
+        uuid city_id FK
+        timestamp predicted_for
+        float pm2_5_predicted
+        float confidence_score
+        string model_version
+        timestamp created_at
+    }
+    
+    ALERTS {
+        uuid id PK
+        uuid user_id FK
+        uuid city_id FK
+        string severity_level
+        string alert_message
+        boolean is_read
+        timestamp triggered_at
+        timestamp sent_at
+    }
+    
+    EXTERNAL_SOURCES {
+        uuid id PK
+        string source_name
+        string api_endpoint
+        boolean is_active
+        timestamp last_fetched
+    }
+    
+    USERS ||--o{ ALERTS : "receives"
+    USERS ||--o{ PREFERENCES : "configures"
+    CITIES ||--o{ POLLUTION_DATA : "contains"
+    POLLUTION_DATA ||--o{ PREDICTIONS : "generates"
+    EXTERNAL_SOURCES ||--o{ POLLUTION_DATA : "provides"
 ```
