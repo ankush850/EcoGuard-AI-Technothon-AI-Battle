@@ -148,3 +148,69 @@ graph TB
     PROM --> GRAF
     API --> SENTRY
 ```
+📊** Real-time Data Flow**
+
+```mermaid
+sequenceDiagram
+    participant User as User/Browser
+    participant Frontend as React Dashboard
+    participant API as FastAPI Server
+    participant Cache as Redis Cache
+    participant DB as TimescaleDB
+    participant Kafka as Kafka Queue
+    participant ML as ML Service
+    participant Alert as Alert Service
+
+    Note over User,Alert: Step 1: User Loads Dashboard
+
+    User->>Frontend: Load Dashboard Page
+    Frontend->>API: GET /api/v1/pollution/current
+    API->>Cache: Check cache for latest data
+
+    alt Cache Hit
+        Cache-->>API: Return cached data
+    else Cache Miss
+        API->>DB: Query latest pollution data
+        DB-->>API: Return database results
+        API->>Cache: Store with 5-min TTL
+    end
+
+    API-->>Frontend: Return pollution data
+    Frontend-->>User: Display dashboard
+
+    Note over User,Alert: Step 2: Real-time Updates (WebSocket)
+
+    Frontend->>API: Establish WebSocket connection
+    API->>Kafka: Subscribe to pollution-updates topic
+
+    loop Every minute
+        Kafka-->>API: Stream real-time pollution data
+        API-->>Frontend: Push updates via WebSocket
+        Frontend-->>User: Update UI in real-time
+    end
+
+    Note over User,Alert: Step 3: Scheduled Data Processing
+
+    loop Every 5 minutes
+        API->>Kafka: Publish new pollution readings
+        Kafka->>ML: Trigger ML prediction
+        ML->>ML: Run LSTM model inference
+        ML->>DB: Store 24-hour predictions
+        ML->>Kafka: Publish prediction results
+        Kafka->>Alert: Check alert thresholds
+
+        alt Threshold Exceeded
+            Alert->>Alert: Generate alert notification
+            Alert->>User: Send email/SMS notification
+        end
+    end
+
+    Note over User,Alert: Step 4: User Requests Historical Data
+
+    User->>Frontend: Click "View History"
+    Frontend->>API: GET /api/v1/pollution/historical
+    API->>DB: Query time-series data
+    DB-->>API: Return historical records
+    API-->>Frontend: Return chart-ready data
+    Frontend-->>User: Display historical charts
+```
