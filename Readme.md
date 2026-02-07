@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Technothon 2024](https://img.shields.io/badge/Technothon-AI%20Battle-red.svg)](https://technothon.ai)
 
-## 🏆 Team AI Winner - Technothon 2024 Submission
+## 🏆 Team AI Winner - Technothon: AI Battle Submission
 
 **EcoGuard AI** is a real-time environmental pollution monitoring and prediction platform that forecasts air quality 24-48 hours in advance using artificial intelligence. Our system helps cities, organizations, and individuals take preventive action against pollution before it reaches dangerous levels.
 
